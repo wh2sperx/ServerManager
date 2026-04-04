@@ -1,0 +1,19 @@
+# ┌──────────────────────────────────────────────┐
+# │          ServerManager Configuration         │
+# └──────────────────────────────────────────────┘
+
+# H2 database file name (without extension)
+storage:
+  file: "data"
+
+# Password generation settings
+password:
+  min-length: 8
+  max-length: 12
+
+# /admin list pagination
+list:
+  page-size: 10
+
+metrics:
+  toggle: true
