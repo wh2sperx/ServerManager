@@ -43,6 +43,9 @@ class ConfigManager(
     val metrics: Boolean
         get() = config.getBoolean("metrics.toggle")
 
+    val retry: Int
+        get() = config.getInt("password.retry")
+
     // Messages
 
     fun getMessage(key: String): String {

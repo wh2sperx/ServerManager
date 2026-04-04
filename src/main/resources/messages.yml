@@ -33,6 +33,12 @@ command:
   grant-success-offline: "<green>✔ Đã cấp password cho <white>{player}</white> (sẽ gửi khi online).</green>"
   revoke-success: "<green>✔ Đã thu hồi password của <white>{player}</white>.</green>"
 
+  login-success: "<green>✔ Đăng nhập thành công!"
+  logout-success: "<green>✔ Đã đăng xuất thành công.</green>"
+  command-blocked-in-special-mode: "<red>✘ Không thể dùng lệnh.</red>"
+  wrong-password-retry: "<red>✘ Sai password, còn {retry} lần thử.</red>"
+  wrong-password: "<red>✘ Sai password! vui lòng thử lại sau.</red>"
+
 # ─── List display ─────────────────────────────────────────────
 list:
   empty: "<yellow>⚠ Chưa có người chơi nào được cấp password.</yellow>"

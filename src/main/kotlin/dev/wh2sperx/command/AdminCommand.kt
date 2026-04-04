@@ -1,11 +1,15 @@
 package dev.wh2sperx.command
 
 import dev.wh2sperx.ServerManager
+import dev.wh2sperx.command.send
+import dev.wh2sperx.listener.AsyncChatListener
+import dev.wh2sperx.manager.FuckingSpecialModeManager
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
+import org.bukkit.entity.Player
 
 class AdminCommand(
     private val plugin: ServerManager
@@ -169,8 +173,20 @@ class AdminCommand(
     }
 
     private fun handleLogin(sender: CommandSender, args: Array<out String>) {
-        // TODO: Implement login logic
-        messages.send(sender, "command.not-implemented")
+        if (sender !is Player) {
+            messages.send(sender, "command.no-permission")
+            return
+        }
+
+        val uuid = (sender as Player).uniqueId
+
+        if (!passwords.isAccountExists(uuid)) {
+            messages.send(sender, "command.no-permission")
+            return
+        }
+        if(!AsyncChatListener.isInQueue(uuid)) {
+            AsyncChatListener.putQueue(uuid)
+        }
     }
 
     private fun handleReload(sender: CommandSender) {
