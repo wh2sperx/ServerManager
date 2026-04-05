@@ -28,42 +28,21 @@ class AsyncChatListener(
         }
     }
 
-    //Debugging
     @EventHandler(priority = EventPriority.LOWEST)
     fun onAsyncChatEvent(event: AsyncChatEvent) {
         val pl = event.player
         val uuid = pl.uniqueId
         val msg = PlainTextComponentSerializer.plainText().serialize(event.originalMessage())
 
-        plugin.logger.info("=== EVENT START ===")
-        plugin.logger.info("Message: '$msg'")
-        plugin.logger.info("isInQueue: ${isInQueue(uuid)}")
-        plugin.logger.info("isInSpecialMode: ${FuckingSpecialModeManager.isInSpecialMode(uuid)}")
-
         if (isInQueue(uuid)) {
-            plugin.logger.info("→ Case QUEUE - processing login")
-            event.isCancelled = true
-            event.viewers().clear()
             handleLogin(event, pl, uuid)
-            plugin.logger.info(
-                "→ After handleLogin - isInQueue: ${isInQueue(uuid)}, isInSpecialMode: ${
-                    FuckingSpecialModeManager.isInSpecialMode(
-                        uuid
-                    )
-                }"
-            )
             return
         }
 
         if (FuckingSpecialModeManager.isInSpecialMode(uuid)) {
-            plugin.logger.info("→ Case SPECIAL MODE - processing command")
-            event.isCancelled = true
-            event.viewers().clear()
             handleSpecialModeCommands(event, pl)
             return
         }
-
-        plugin.logger.info("→ NO CASE matched")
     }
 
     private fun handleLogin(event: AsyncChatEvent, pl: Player, uuid: UUID) {
@@ -99,15 +78,12 @@ class AsyncChatListener(
         val args = msg2.split(" ")
 
         if (args.isEmpty() || args[0].isEmpty()) return
-        plugin.logger.info("Special mode receiver: ${args[0]}") //debug
 
         when (args[0].lowercase()) {
             "logout", "quit", "exit" -> handleLogout(pl)
             else -> {
                 Bukkit.getScheduler().runTask(plugin, Runnable {
                     pl.sendMessage("lenh deo hop le")
-                    //debug
-                    plugin.logger.info("Debug: lenh deo hop le")
                 })
             }
         }
@@ -117,9 +93,6 @@ class AsyncChatListener(
         Bukkit.getScheduler().runTask(plugin, Runnable {
             FuckingSpecialModeManager.disableSpecialMode(player.uniqueId)
             player.sendMessage("da dang xuat")
-            //debug
-            plugin.logger.info("=== LOGOUT ===")
-            plugin.logger.info("Special mode disabled for ${player.name}")
         })
     }
 
