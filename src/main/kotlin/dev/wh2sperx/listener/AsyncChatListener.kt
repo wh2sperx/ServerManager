@@ -17,6 +17,17 @@ class AsyncChatListener(
 ) : Listener {
     private val loginAttempts = ConcurrentHashMap<UUID, Int>()
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun fuckAllChatPlugins(event: AsyncChatEvent) {
+        val uuid = event.player.uniqueId
+    
+        if (isInQueue(uuid) || FuckingSpecialModeManager.isInSpecialMode(uuid)) {
+            event.isCancelled = true
+            event.renderer { _, _, _, _ -> Component.empty() }
+            event.viewers().clear()
+        }
+    }
+
     //Debugging
     @EventHandler(priority = EventPriority.LOWEST)
     fun onAsyncChatEvent(event: AsyncChatEvent) {
