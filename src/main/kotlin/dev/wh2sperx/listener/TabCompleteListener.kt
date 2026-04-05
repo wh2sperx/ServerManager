@@ -4,6 +4,7 @@ import dev.wh2sperx.ServerManager
 import dev.wh2sperx.manager.FuckingSpecialModeManager
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.server.TabCompleteEvent
@@ -11,25 +12,20 @@ import org.bukkit.event.server.TabCompleteEvent
 class TabCompleteListener(
     private val plugin: ServerManager
 ) : Listener {
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onTabComplete(event: TabCompleteEvent) {
-        val buffer = event.buffer
-        if(event.sender is Player) {
-            val pl = event.sender as Player
-            if(FuckingSpecialModeManager.isInSpecialMode(pl.uniqueId)) {
-                if(buffer.startsWith("/")) {
-                    event.completions = emptyList()
-                }
-            }
+        val player = event.sender as? Player ?: return
+        if (FuckingSpecialModeManager.isInSpecialMode(player.uniqueId)) {
+            event.completions = emptyList()
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onStaffCommand(command: PlayerCommandPreprocessEvent) {
         val pl = command.player
-        if(FuckingSpecialModeManager.isInSpecialMode(pl.uniqueId)) {
+        if (FuckingSpecialModeManager.isInSpecialMode(pl.uniqueId)) {
             command.isCancelled = true
+            plugin.messageManager.send(pl, "command.command-blocked-in-special-mode")
         }
-        plugin.messageManager.send(pl, "command.command-blocked-in-special-mode")
     }
 }

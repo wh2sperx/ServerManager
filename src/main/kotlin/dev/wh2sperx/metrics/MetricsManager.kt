@@ -62,7 +62,12 @@ class MetricsManager(
             DrilldownPie("java_information") {
                 mapOf(
                     "Java Details" to mapOf(
-                        "${System.getProperty("java.runtime.name", "Unknown")} (${System.getProperty("sun.arch.data.model", "Unknown")}-bit)" to 1
+                        "${
+                            System.getProperty(
+                                "java.runtime.name",
+                                "Unknown"
+                            )
+                        } (${System.getProperty("sun.arch.data.model", "Unknown")}-bit)" to 1
                     ),
                     "Java Vendor" to mapOf(
                         System.getProperty("java.vendor", "Unknown") to 1

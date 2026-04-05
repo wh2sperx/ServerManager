@@ -41,6 +41,43 @@
             <goals>
               <goal>shade</goal>
             </goals>
+            <configuration>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/LICENSE</exclude>
+                    <exclude>META-INF/NOTICE</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <relocations>
+                <relocation>
+                  <pattern>org.bstats</pattern>
+                  <shadedPattern>dev.wh2sperx.servermanager.libs.bstats</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.h2</pattern>
+                  <shadedPattern>dev.wh2sperx.servermanager.libs.h2</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.mindrot</pattern>
+                  <shadedPattern>dev.wh2sperx.servermanager.libs.mindrot</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>kotlin</pattern>
+                  <shadedPattern>dev.wh2sperx.servermanager.libs.kotlin</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>kotlinx</pattern>
+                  <shadedPattern>dev.wh2sperx.servermanager.libs.kotlinx</shadedPattern>
+                </relocation>
+              </relocations>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -53,7 +90,7 @@
     </repository>
     <repository>
       <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
+      <url>https://github.com/jitpack</url>
     </repository>
     <repository>
       <id>placeholderapi</id>
@@ -68,7 +105,13 @@
     <dependency>
       <groupId>io.papermc.paper</groupId>
       <artifactId>paper-api</artifactId>
-      <version>1.21.11-R0.1-SNAPSHOT</version>
+      <version>1.21.10-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.luckperms</groupId>
+      <artifactId>api</artifactId>
+      <version>5.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

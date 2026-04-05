@@ -10,18 +10,17 @@ import dev.wh2sperx.manager.PermissionManager
 import dev.wh2sperx.metrics.MetricsManager
 import dev.wh2sperx.security.PasswordManager
 import dev.wh2sperx.storage.StorageManager
-import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
 private const val PLUGIN_ID = 30571
+
 class ServerManager : JavaPlugin() {
     private var hasVault: Boolean = false
     private var hasPapi: Boolean = false
 
     lateinit var economy: Economy private set
-    lateinit var adventure: BukkitAudiences private set
     lateinit var configManager: ConfigManager private set
     lateinit var storageManager: StorageManager private set
     lateinit var messageManager: MessageManager private set
@@ -33,14 +32,13 @@ class ServerManager : JavaPlugin() {
         hasVault = setupEconomy()
         hasPapi = checkPlaceholderAPI()
 
-        adventure = BukkitAudiences.create(this)
 
         configManager = ConfigManager(this)
         storageManager = StorageManager(this); storageManager.initialize()
-        messageManager = MessageManager(adventure, configManager, hasPapi)
+        messageManager = MessageManager(configManager, hasPapi)
         passwordManager = PasswordManager(storageManager)
-        permissionManager = PermissionManager(this); permissionManager.initialize()
-        metricsManager = MetricsManager(PLUGIN_ID, this)
+        permissionManager = PermissionManager(); permissionManager.initialize()
+        metricsManager = MetricsManager(PLUGIN_ID, this); metricsManager.start()
 
         getCommand("admin")?.let { cmd ->
             val adminCommand = AdminCommand(this)
@@ -55,7 +53,6 @@ class ServerManager : JavaPlugin() {
 
     override fun onDisable() {
         if (::storageManager.isInitialized) storageManager.shutdown()
-        if (::adventure.isInitialized) adventure.close()
     }
 
     private fun setupEconomy(): Boolean {

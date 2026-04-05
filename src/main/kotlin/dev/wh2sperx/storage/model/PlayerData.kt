@@ -1,6 +1,6 @@
 package dev.wh2sperx.storage.model
 
-import java.util.UUID
+import java.util.*
 
 data class PlayerData(
     val uuid: UUID,

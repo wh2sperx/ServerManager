@@ -4,7 +4,7 @@ import dev.wh2sperx.storage.StorageManager
 import dev.wh2sperx.storage.model.PlayerData
 import org.mindrot.jbcrypt.BCrypt
 import java.security.SecureRandom
-import java.util.UUID
+import java.util.*
 
 class PasswordManager(
     private val storageManager: StorageManager

@@ -2,6 +2,7 @@ package dev.wh2sperx.command
 
 import dev.wh2sperx.ServerManager
 import dev.wh2sperx.listener.AsyncChatListener
+import dev.wh2sperx.manager.MessageManager
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -42,7 +43,7 @@ class AdminCommand(
         }
 
         when (args[0].lowercase()) {
-            "login" -> handleLogin(sender, args)
+            "login" -> handleLogin(sender)
             "list", "grant", "revoke", "reload" -> {
                 if (!isOwner(sender)) {
                     messages.send(sender, "command.no-permission")
@@ -55,6 +56,7 @@ class AdminCommand(
                     "reload" -> handleReload(sender)
                 }
             }
+
             else -> sendHelp(sender)
         }
         return true
@@ -81,28 +83,34 @@ class AdminCommand(
         val pageItems = allPlayers.subList(start, end)
 
         // Header
-        messages.send(sender, "list.header", mapOf(
-            "page" to page.toString(),
-            "total_pages" to totalPages.toString(),
-            "total_players" to allPlayers.size.toString()
-        ))
+        messages.send(
+            sender, "list.header", mapOf(
+                "page" to page.toString(),
+                "total_pages" to totalPages.toString(),
+                "total_players" to allPlayers.size.toString()
+            )
+        )
 
         // Entries
         for ((index, data) in pageItems.withIndex()) {
             val offlinePlayer = Bukkit.getOfflinePlayer(data.uuid)
             val name = offlinePlayer.name ?: data.uuid.toString()
-            messages.send(sender, "list.entry", mapOf(
-                "index" to (start + index + 1).toString(),
-                "player" to name,
-                "uuid" to data.uuid.toString()
-            ))
+            messages.send(
+                sender, "list.entry", mapOf(
+                    "index" to (start + index + 1).toString(),
+                    "player" to name,
+                    "uuid" to data.uuid.toString()
+                )
+            )
         }
 
         // Footer
-        messages.send(sender, "list.footer", mapOf(
-            "page" to page.toString(),
-            "total_pages" to totalPages.toString()
-        ))
+        messages.send(
+            sender, "list.footer", mapOf(
+                "page" to page.toString(),
+                "total_pages" to totalPages.toString()
+            )
+        )
     }
 
     private fun handleGrant(sender: CommandSender, args: Array<out String>) {
@@ -166,21 +174,20 @@ class AdminCommand(
         messages.send(sender, "command.revoke-success", mapOf("player" to targetName))
     }
 
-    private fun handleLogin(sender: CommandSender, args: Array<out String>) {
+    private fun handleLogin(sender: CommandSender) {
         if (sender !is Player) {
             messages.send(sender, "command.no-permission")
             return
         }
 
-        val pl = sender as Player
-        val uuid = pl.uniqueId
+        val uuid = sender.uniqueId
 
         if (!passwords.isAccountExists(uuid)) {
             messages.send(sender, "command.no-permission")
             return
         }
         AsyncChatListener.addToQueueIfAbsent(uuid)
-        pl.sendMessage("vui long nhap pass vao thanh chat: =))") //debug
+        sender.sendMessage("vui long nhap pass vao thanh chat: =))") //debug
     }
 
     private fun handleReload(sender: CommandSender) {
@@ -222,6 +229,7 @@ class AdminCommand(
                     "grant", "revoke" -> Bukkit.getOnlinePlayers()
                         .map { it.name }
                         .filter { it.lowercase().startsWith(args[1].lowercase()) }
+
                     else -> emptyList()
                 }
             }
@@ -231,13 +239,13 @@ class AdminCommand(
     }
 }
 
-private fun dev.wh2sperx.manager.MessageManager.send(
+private fun MessageManager.send(
     sender: CommandSender,
     key: String,
     placeholders: Map<String, String> = emptyMap()
 ) {
     when (sender) {
-        is org.bukkit.entity.Player -> send(sender, key, placeholders)
+        is Player -> send(sender, key, placeholders)
         else -> sendConsoleComponent(getMessage(key, placeholders))
     }
 }
