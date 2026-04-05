@@ -2,8 +2,11 @@ package dev.wh2sperx
 
 import dev.wh2sperx.command.AdminCommand
 import dev.wh2sperx.config.ConfigManager
+import dev.wh2sperx.listener.AsyncChatListener
 import dev.wh2sperx.listener.PlayerJoinListener
+import dev.wh2sperx.listener.TabCompleteListener
 import dev.wh2sperx.manager.MessageManager
+import dev.wh2sperx.manager.PermissionManager
 import dev.wh2sperx.metrics.MetricsManager
 import dev.wh2sperx.security.PasswordManager
 import dev.wh2sperx.storage.StorageManager
@@ -23,6 +26,7 @@ class ServerManager : JavaPlugin() {
     lateinit var storageManager: StorageManager private set
     lateinit var messageManager: MessageManager private set
     lateinit var passwordManager: PasswordManager private set
+    lateinit var permissionManager: PermissionManager private set
     lateinit var metricsManager: MetricsManager private set
 
     override fun onEnable() {
@@ -32,10 +36,10 @@ class ServerManager : JavaPlugin() {
         adventure = BukkitAudiences.create(this)
 
         configManager = ConfigManager(this)
-        storageManager = StorageManager(this)
-        storageManager.initialize()
+        storageManager = StorageManager(this); storageManager.initialize()
         messageManager = MessageManager(adventure, configManager, hasPapi)
         passwordManager = PasswordManager(storageManager)
+        permissionManager = PermissionManager(this); permissionManager.initialize()
         metricsManager = MetricsManager(PLUGIN_ID, this)
 
         getCommand("admin")?.let { cmd ->
@@ -44,7 +48,9 @@ class ServerManager : JavaPlugin() {
             cmd.tabCompleter = adminCommand
         }
 
+        Bukkit.getPluginManager().registerEvents(AsyncChatListener(this), this)
         Bukkit.getPluginManager().registerEvents(PlayerJoinListener(this), this)
+        Bukkit.getPluginManager().registerEvents(TabCompleteListener(this), this)
     }
 
     override fun onDisable() {

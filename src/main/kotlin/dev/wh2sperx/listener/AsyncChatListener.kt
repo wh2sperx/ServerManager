@@ -11,42 +11,54 @@ import java.util.UUID
 class AsyncChatListener(
     private val plugin: ServerManager
 ) : Listener {
+    private val loginAttempts = mutableMapOf<UUID, Int>()
+
     @EventHandler
     fun onAsyncChatEvent(event: AsyncChatEvent) {
         val pl = event.player
         val uuid = pl.uniqueId
-        val att = plugin.configManager.retry
-        var attempts = 0;
+        val maxRetry = plugin.configManager.retry
+
         if(isInQueue(uuid)) {
             event.isCancelled = true
-            //todo: yeu cau nhap mat khau
+
             val password = PlainTextComponentSerializer.plainText().serialize(event.message())
             val pass = plugin.passwordManager.verifyPassword(uuid, password)
+
             if(pass) {
                 FuckingSpecialModeManager.enableSpecialMode(uuid)
                 plugin.messageManager.send(pl, "command.login-success")
                 dequeue(uuid)
+                loginAttempts.remove(uuid)
             } else {
-                attempts++
-                if(attempts >= att) {
+                val currentAttempts = loginAttempts.getOrDefault(uuid, 0) + 1
+                loginAttempts[uuid] = currentAttempts
+
+                if(currentAttempts >= maxRetry) {
                     plugin.messageManager.send(pl, "command.wrong-password")
                     dequeue(uuid)
+                    loginAttempts.remove(uuid)
                 } else {
-                    plugin.messageManager.send(pl, "command.wrong-password-retry", mapOf("retry" to (att - attempts).toString()))
+                    val remaining = maxRetry - currentAttempts
+                    plugin.messageManager.send(pl, "command.wrong-password-retry",
+                        mapOf("retry" to remaining.toString()))
                 }
             }
         }
     }
 
+    @EventHandler
     fun onAsyncChatEvent2(event: AsyncChatEvent) {
         val pl = event.player
         val uuid = pl.uniqueId
         if(FuckingSpecialModeManager.isInSpecialMode(uuid)) {
             event.isCancelled = true
             val msg = PlainTextComponentSerializer.plainText().serialize(event.message()).split(" ")
+            if(msg.isEmpty()) return
             when(msg[0]) {
-                "logout" -> {
+                "logout", "quit", "exit" -> {
                     FuckingSpecialModeManager.disableSpecialMode(uuid)
+                    pl.sendMessage("da dang xuat") //debug
                 }
             }
         }
@@ -58,5 +70,8 @@ class AsyncChatListener(
         fun isInQueue(uuid: UUID): Boolean = fuckingQueue.contains(uuid)
         fun putQueue(uuid: UUID) { fuckingQueue.add(uuid) }
         fun dequeue(uuid: UUID) { fuckingQueue.remove(uuid) }
+        fun addToQueueIfAbsent(uuid: UUID) {
+            if(!isInQueue(uuid)) putQueue(uuid)
+        }
     }
 }

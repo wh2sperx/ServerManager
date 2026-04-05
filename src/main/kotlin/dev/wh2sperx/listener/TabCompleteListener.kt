@@ -27,8 +27,7 @@ class TabCompleteListener(
     @EventHandler
     fun onStaffCommand(command: PlayerCommandPreprocessEvent) {
         val pl = command.player
-        val isIn = FuckingSpecialModeManager.isInSpecialMode(pl.uniqueId)
-        if(isIn) {
+        if(FuckingSpecialModeManager.isInSpecialMode(pl.uniqueId)) {
             command.isCancelled = true
         }
         plugin.messageManager.send(pl, "command.command-blocked-in-special-mode")

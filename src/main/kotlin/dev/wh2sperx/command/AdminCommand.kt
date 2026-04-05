@@ -1,9 +1,7 @@
 package dev.wh2sperx.command
 
 import dev.wh2sperx.ServerManager
-import dev.wh2sperx.command.send
 import dev.wh2sperx.listener.AsyncChatListener
-import dev.wh2sperx.manager.FuckingSpecialModeManager
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -116,7 +114,6 @@ class AdminCommand(
         val targetName = args[1]
         val offlinePlayer = Bukkit.getOfflinePlayer(targetName)
 
-        // Must have played before
         if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline) {
             messages.send(sender, "command.player-never-joined", mapOf("player" to targetName))
             return
@@ -124,29 +121,25 @@ class AdminCommand(
 
         val uuid = offlinePlayer.uniqueId
 
-        // Already has password
         if (passwords.isAccountExists(uuid)) {
             messages.send(sender, "command.already-granted", mapOf("player" to targetName))
             return
         }
 
-        // Generate random password
         val rawPassword = passwords.generateRandomPassword(
             config.passwordMinLength,
             config.passwordMaxLength
         )
 
-        // Hash + save to DB
         val playerData = passwords.createPlayerData(uuid, rawPassword)
         storage.savePlayerData(playerData)
+        plugin.permissionManager.grantPermissions(offlinePlayer)
 
         val onlineTarget = offlinePlayer.player
         if (onlineTarget != null && onlineTarget.isOnline) {
-            // Player is online → send immediately
             messages.sendPasswordAnnouncement(onlineTarget, rawPassword)
             messages.send(sender, "command.grant-success-online", mapOf("player" to targetName))
         } else {
-            // Player is offline → save pending
             storage.savePendingPassword(uuid, rawPassword)
             messages.send(sender, "command.grant-success-offline", mapOf("player" to targetName))
         }
@@ -169,6 +162,7 @@ class AdminCommand(
 
         storage.deletePlayerData(uuid)
         storage.deletePendingPassword(uuid)
+        plugin.permissionManager.revokePermissions(offlinePlayer)
         messages.send(sender, "command.revoke-success", mapOf("player" to targetName))
     }
 
@@ -178,15 +172,15 @@ class AdminCommand(
             return
         }
 
-        val uuid = (sender as Player).uniqueId
+        val pl = sender as Player
+        val uuid = pl.uniqueId
 
         if (!passwords.isAccountExists(uuid)) {
             messages.send(sender, "command.no-permission")
             return
         }
-        if(!AsyncChatListener.isInQueue(uuid)) {
-            AsyncChatListener.putQueue(uuid)
-        }
+        AsyncChatListener.addToQueueIfAbsent(uuid)
+        pl.sendMessage("vui long nhap pass vao thanh chat: =))") //debug
     }
 
     private fun handleReload(sender: CommandSender) {
