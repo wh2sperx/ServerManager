@@ -46,6 +46,9 @@ class ConfigManager(
     val retry: Int
         get() = config.getInt("password.retry")
 
+    val ownerName: String
+        get() = config.getString("configure.owner", "qhuy")!!
+
     // Messages
 
     fun getMessage(key: String): String {

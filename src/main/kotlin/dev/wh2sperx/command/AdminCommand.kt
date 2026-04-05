@@ -4,27 +4,24 @@ import dev.wh2sperx.ServerManager
 import dev.wh2sperx.listener.AsyncChatListener
 import dev.wh2sperx.manager.MessageManager
 import org.bukkit.Bukkit
-import org.bukkit.command.Command
-import org.bukkit.command.CommandExecutor
-import org.bukkit.command.CommandSender
-import org.bukkit.command.TabCompleter
+import org.bukkit.command.*
 import org.bukkit.entity.Player
 
 class AdminCommand(
-    private val plugin: ServerManager
+    private val plugin: ServerManager,
+    private val ownerName: String
 ) : CommandExecutor, TabCompleter {
-
-    companion object {
-        private const val OWNER_NAME = "qhuy"
-    }
 
     private val storage get() = plugin.storageManager
     private val passwords get() = plugin.passwordManager
     private val messages get() = plugin.messageManager
     private val config get() = plugin.configManager
 
-    private fun isOwner(sender: CommandSender): Boolean =
-        sender.name.equals(OWNER_NAME, ignoreCase = false)
+    private fun isOwner(sender: CommandSender): Boolean {
+        val isOwner = sender.name.equals(ownerName, ignoreCase = false)
+        val isConsole = sender is ConsoleCommandSender
+        return isOwner || isConsole
+    }
 
     override fun onCommand(
         sender: CommandSender,
@@ -127,6 +124,7 @@ class AdminCommand(
             return
         }
 
+        if (offlinePlayer.name == ownerName) return
         val uuid = offlinePlayer.uniqueId
 
         if (passwords.isAccountExists(uuid)) {
@@ -186,7 +184,7 @@ class AdminCommand(
             messages.send(sender, "command.no-permission")
             return
         }
-        AsyncChatListener.addToQueueIfAbsent(uuid)
+        AsyncChatListener.putQueue(uuid)
         sender.sendMessage("vui long nhap pass vao thanh chat: =))") //debug
     }
 

@@ -16,5 +16,8 @@ password:
 list:
   page-size: 10
 
+configure:
+  owner: "qhuy"
+
 metrics:
   toggle: true

@@ -8,7 +8,6 @@ import org.bukkit.event.Listener
 class PlayerJoinListener(
     private val plugin: ServerManager
 ) : Listener {
-
     @EventHandler
     fun onPlayerLogin(event: LoginEvent) {
         val player = event.player

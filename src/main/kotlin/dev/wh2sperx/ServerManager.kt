@@ -20,6 +20,7 @@ class ServerManager : JavaPlugin() {
     private var hasVault: Boolean = false
     private var hasPapi: Boolean = false
 
+    lateinit var ownerAccount: String private set
     lateinit var economy: Economy private set
     lateinit var configManager: ConfigManager private set
     lateinit var storageManager: StorageManager private set
@@ -29,23 +30,43 @@ class ServerManager : JavaPlugin() {
     lateinit var metricsManager: MetricsManager private set
 
     override fun onEnable() {
+        // Dependencies
         hasVault = setupEconomy()
         hasPapi = checkPlaceholderAPI()
 
-
+        // Initial ConfigManager
         configManager = ConfigManager(this)
-        storageManager = StorageManager(this); storageManager.initialize()
-        messageManager = MessageManager(configManager, hasPapi)
-        passwordManager = PasswordManager(storageManager)
-        permissionManager = PermissionManager(); permissionManager.initialize()
-        metricsManager = MetricsManager(PLUGIN_ID, this); metricsManager.start()
+        ownerAccount = configManager.ownerName
 
+        // Initial Storage
+        storageManager = StorageManager(this)
+        storageManager.initialize()
+
+        // Stuff
+        messageManager = MessageManager(configManager, hasPapi, this)
+
+        // Permission
+        permissionManager = PermissionManager(); permissionManager.initialize()
+
+        // Metrics ( bstats )
+        metricsManager = MetricsManager(
+            PLUGIN_ID,
+            this
+        )
+        metricsManager.start()
+
+        // Initial PasswordManager
+        passwordManager = PasswordManager(this)
+        passwordManager.initializeOwnerAccount(ownerAccount)
+
+        // Register Command
         getCommand("admin")?.let { cmd ->
-            val adminCommand = AdminCommand(this)
+            val adminCommand = AdminCommand(this, ownerAccount)
             cmd.setExecutor(adminCommand)
             cmd.tabCompleter = adminCommand
         }
 
+        // Register Event
         Bukkit.getPluginManager().registerEvents(AsyncChatListener(this), this)
         Bukkit.getPluginManager().registerEvents(PlayerJoinListener(this), this)
         Bukkit.getPluginManager().registerEvents(TabCompleteListener(this), this)

@@ -1,5 +1,6 @@
 package dev.wh2sperx.manager
 
+import dev.wh2sperx.ServerManager
 import dev.wh2sperx.config.ConfigManager
 import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
@@ -11,17 +12,22 @@ import org.bukkit.entity.Player
 
 class MessageManager(
     private val configManager: ConfigManager,
-    private val hasPapi: Boolean
+    private val hasPapi: Boolean,
+    private val plugin: ServerManager
 ) {
     private val miniMessage: MiniMessage = MiniMessage.miniMessage()
 
     fun send(player: Player, key: String, placeholders: Map<String, String> = emptyMap()) {
         val component = getMessage(key, placeholders, player)
-        player.sendMessage(component)
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            player.sendMessage(component)
+        })
     }
 
     fun sendConsoleComponent(component: Component) {
-        Bukkit.getConsoleSender().sendMessage(component)
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            Bukkit.getConsoleSender().sendMessage(component)
+        })
     }
 
     fun sendPasswordAnnouncement(player: Player, password: String) {
@@ -39,7 +45,9 @@ class MessageManager(
                     miniMessage.deserialize(configManager.getMessage("password.hover"))
                 )
             )
-        player.sendMessage(component)
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            player.sendMessage(component)
+        })
 
         send(player, "password.footer")
     }

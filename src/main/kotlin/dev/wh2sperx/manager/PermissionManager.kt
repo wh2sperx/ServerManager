@@ -1,5 +1,6 @@
 package dev.wh2sperx.manager
 
+import dev.wh2sperx.manager.model.IsValid
 import net.luckperms.api.LuckPerms
 import net.luckperms.api.model.user.User
 import net.luckperms.api.node.Node
@@ -20,8 +21,20 @@ class PermissionManager {
         }
     }
 
+    fun isAValidPlayer(pl: OfflinePlayer): IsValid {
+        val user = api.userManager.getUser(pl.uniqueId)
+        val valid = (pl.hasPlayedBefore() || pl.isOnline) && user != null
+        return if (valid) {
+            IsValid(true, user)
+        } else {
+            IsValid(false, null)
+        }
+    }
+
     fun grantPermissions(pl: OfflinePlayer) {
-        val user = api.userManager.getUser(pl.uniqueId) ?: return
+        val player = isAValidPlayer(pl)
+        if (!player.valid) return
+        val user = player.user ?: return
         val node = Node.builder("wh2sperx.admin").build()
         if (alreadyHasPermission(user)) return
         user.data().add(node)
