@@ -5,7 +5,7 @@ api-version: '1.21'
 load: STARTUP
 authors: [ wh2sperx ]
 website: https://qhuyy.tech
-depend: [ AuthMe ]
+depend: [ AuthMe, ProtocolLib ]
 softdepend: [ PlaceholderAPI, Vault ]
 
 commands:

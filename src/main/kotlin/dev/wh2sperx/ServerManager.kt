@@ -1,10 +1,12 @@
 package dev.wh2sperx
 
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.ProtocolManager
 import dev.wh2sperx.command.AdminCommand
 import dev.wh2sperx.config.ConfigManager
-import dev.wh2sperx.listener.AsyncChatListener
+import dev.wh2sperx.listener.ChatPacketInterceptor
 import dev.wh2sperx.listener.PlayerJoinListener
-import dev.wh2sperx.listener.TabCompleteListener
+import dev.wh2sperx.listener.StaffCommandPacketInterceptor
 import dev.wh2sperx.manager.MessageManager
 import dev.wh2sperx.manager.PermissionManager
 import dev.wh2sperx.metrics.MetricsManager
@@ -22,6 +24,7 @@ class ServerManager : JavaPlugin() {
 
     lateinit var ownerAccount: String private set
     lateinit var economy: Economy private set
+    lateinit var protocolManager: ProtocolManager private set
     lateinit var configManager: ConfigManager private set
     lateinit var storageManager: StorageManager private set
     lateinit var messageManager: MessageManager private set
@@ -37,6 +40,7 @@ class ServerManager : JavaPlugin() {
         // Initial ConfigManager
         configManager = ConfigManager(this)
         ownerAccount = configManager.ownerName
+        protocolManager = ProtocolLibrary.getProtocolManager()
 
         // Initial Storage
         storageManager = StorageManager(this)
@@ -67,9 +71,9 @@ class ServerManager : JavaPlugin() {
         }
 
         // Register Event
-        Bukkit.getPluginManager().registerEvents(AsyncChatListener(this), this)
+        protocolManager.addPacketListener(ChatPacketInterceptor(this))
+        protocolManager.addPacketListener(StaffCommandPacketInterceptor(this))
         Bukkit.getPluginManager().registerEvents(PlayerJoinListener(this), this)
-        Bukkit.getPluginManager().registerEvents(TabCompleteListener(this), this)
     }
 
     override fun onDisable() {

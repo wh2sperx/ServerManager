@@ -1,7 +1,7 @@
 package dev.wh2sperx.command
 
 import dev.wh2sperx.ServerManager
-import dev.wh2sperx.listener.AsyncChatListener
+import dev.wh2sperx.listener.ChatPacketInterceptor
 import dev.wh2sperx.manager.MessageManager
 import org.bukkit.Bukkit
 import org.bukkit.command.*
@@ -184,7 +184,7 @@ class AdminCommand(
             messages.send(sender, "command.no-permission")
             return
         }
-        AsyncChatListener.putQueue(uuid)
+        ChatPacketInterceptor.putQueue(uuid)
         sender.sendMessage("vui long nhap pass vao thanh chat: =))") //debug
     }
 
