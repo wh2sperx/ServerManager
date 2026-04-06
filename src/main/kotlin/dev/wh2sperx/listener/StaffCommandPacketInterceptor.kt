@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import dev.wh2sperx.ServerManager
+import dev.wh2sperx.command.AdminCommand
 import dev.wh2sperx.manager.FuckingSpecialModeManager
 
 class StaffCommandPacketInterceptor(private val serverManager: ServerManager) : PacketAdapter(
@@ -26,6 +27,12 @@ class StaffCommandPacketInterceptor(private val serverManager: ServerManager) : 
                     event.isCancelled = true
                 }
             }
+        }
+    }
+
+    override fun onPacketSending(event: PacketEvent) {
+        if(!ChatPacketInterceptor.chatState) {
+            event.isCancelled = true
         }
     }
 }

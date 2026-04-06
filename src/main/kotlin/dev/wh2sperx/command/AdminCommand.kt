@@ -17,10 +17,12 @@ class AdminCommand(
     private val messages get() = plugin.messageManager
     private val config get() = plugin.configManager
 
-    private fun isOwner(sender: CommandSender): Boolean {
-        val isOwner = sender.name.equals(ownerName, ignoreCase = false)
-        val isConsole = sender is ConsoleCommandSender
-        return isOwner || isConsole
+    companion object {
+        fun isOwner(sender: CommandSender, ownerName: String): Boolean {
+            val isOwner = sender.name.equals(ownerName, ignoreCase = false)
+            val isConsole = sender is ConsoleCommandSender
+            return isOwner || isConsole
+        }
     }
 
     override fun onCommand(
@@ -29,7 +31,7 @@ class AdminCommand(
         label: String,
         args: Array<out String>
     ): Boolean {
-        if (!sender.hasPermission("wh2sperx.admin") && !isOwner(sender)) {
+        if (!sender.hasPermission("wh2sperx.admin") && !isOwner(sender, ownerName)) {
             messages.send(sender, "command.no-permission")
             return true
         }
@@ -42,7 +44,7 @@ class AdminCommand(
         when (args[0].lowercase()) {
             "login" -> handleLogin(sender)
             "list", "grant", "revoke", "reload" -> {
-                if (!isOwner(sender)) {
+                if (!isOwner(sender, ownerName)) {
                     messages.send(sender, "command.no-permission")
                     return true
                 }
@@ -205,12 +207,12 @@ class AdminCommand(
         alias: String,
         args: Array<out String>
     ): List<String> {
-        if (!sender.hasPermission("wh2sperx.admin") && !isOwner(sender)) return emptyList()
+        if (!sender.hasPermission("wh2sperx.admin") && !isOwner(sender, ownerName)) return emptyList()
 
         return when (args.size) {
             1 -> {
                 val allCommands = listOf("list", "grant", "revoke", "login", "reload")
-                val filteredCommands = if (isOwner(sender)) {
+                val filteredCommands = if (isOwner(sender, ownerName)) {
                     allCommands
                 } else {
                     listOf("login")
@@ -219,7 +221,7 @@ class AdminCommand(
             }
 
             2 -> {
-                if (!isOwner(sender)) {
+                if (!isOwner(sender, ownerName)) {
                     return emptyList()
                 }
 

@@ -1,0 +1,23 @@
+# ┌──────────────────────────────────────────────┐
+# │          ServerManager Configuration         │
+# └──────────────────────────────────────────────┘
+
+# H2 database file name (without extension)
+storage:
+  file: "data"
+
+# Password generation settings
+password:
+  min-length: 8
+  max-length: 12
+  retry: 3
+
+# /admin list pagination
+list:
+  page-size: 10
+
+configure:
+  owner: "qhuy"
+
+metrics:
+  toggle: true

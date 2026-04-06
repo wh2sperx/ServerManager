@@ -146,6 +146,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>13.6.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>net.dmulloy2</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>5.4.0</version>

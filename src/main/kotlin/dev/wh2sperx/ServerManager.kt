@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager
 import dev.wh2sperx.command.AdminCommand
 import dev.wh2sperx.config.ConfigManager
 import dev.wh2sperx.listener.ChatPacketInterceptor
+import dev.wh2sperx.listener.LockChatPacketInterceptor
 import dev.wh2sperx.listener.PlayerJoinListener
 import dev.wh2sperx.listener.StaffCommandPacketInterceptor
 import dev.wh2sperx.manager.MessageManager
@@ -73,6 +74,7 @@ class ServerManager : JavaPlugin() {
         // Register Event
         protocolManager.addPacketListener(ChatPacketInterceptor(this))
         protocolManager.addPacketListener(StaffCommandPacketInterceptor(this))
+        protocolManager.addPacketListener(LockChatPacketInterceptor(this, ownerAccount))
         Bukkit.getPluginManager().registerEvents(PlayerJoinListener(this), this)
     }
 
