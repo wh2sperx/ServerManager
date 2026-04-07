@@ -11,7 +11,8 @@ class StaffCommandPacketInterceptor(private val serverManager: ServerManager) : 
     serverManager,
     ListenerPriority.HIGHEST,
     PacketType.Play.Client.TAB_COMPLETE,
-    PacketType.Play.Client.CLIENT_COMMAND
+    PacketType.Play.Client.CLIENT_COMMAND,
+    PacketType.Play.Server.TAB_COMPLETE
 ) {
     override fun onPacketReceiving(event: PacketEvent) {
         val player = event.player
@@ -24,6 +25,10 @@ class StaffCommandPacketInterceptor(private val serverManager: ServerManager) : 
                 }
 
                 PacketType.Play.Client.TAB_COMPLETE -> {
+                    event.isCancelled = true
+                }
+
+                PacketType.Play.Server.TAB_COMPLETE -> {
                     event.isCancelled = true
                 }
             }

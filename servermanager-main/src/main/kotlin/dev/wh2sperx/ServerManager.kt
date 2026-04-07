@@ -9,6 +9,7 @@ import dev.wh2sperx.config.ConfigManager
 import dev.wh2sperx.listener.ChatPacketInterceptor
 import dev.wh2sperx.listener.LockChatPacketInterceptor
 import dev.wh2sperx.listener.PlayerJoinListener
+import dev.wh2sperx.listener.PlayerQuitListener
 import dev.wh2sperx.listener.StaffCommandPacketInterceptor
 import dev.wh2sperx.manager.MessageManager
 import dev.wh2sperx.manager.PermissionManager
@@ -89,6 +90,7 @@ class ServerManager : JavaPlugin() {
         protocolManager.addPacketListener(StaffCommandPacketInterceptor(this))
         protocolManager.addPacketListener(LockChatPacketInterceptor(this, ownerAccount))
         Bukkit.getPluginManager().registerEvents(PlayerJoinListener(this), this)
+        Bukkit.getPluginManager().registerEvents(PlayerQuitListener(), this)
     }
 
     override fun onDisable() {
