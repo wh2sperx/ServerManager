@@ -2,6 +2,8 @@ package dev.wh2sperx
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
+import dev.wh2sperx.api.ServerManagerAPI
+import dev.wh2sperx.api.ServerManagerAPIImplement
 import dev.wh2sperx.command.AdminCommand
 import dev.wh2sperx.config.ConfigManager
 import dev.wh2sperx.listener.ChatPacketInterceptor
@@ -15,6 +17,7 @@ import dev.wh2sperx.security.PasswordManager
 import dev.wh2sperx.storage.StorageManager
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
+import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
 
 private const val PLUGIN_ID = 30571
@@ -25,6 +28,7 @@ class ServerManager : JavaPlugin() {
 
     lateinit var ownerAccount: String private set
     lateinit var economy: Economy private set
+    lateinit var apiInstance: ServerManagerAPI private set
     lateinit var protocolManager: ProtocolManager private set
     lateinit var configManager: ConfigManager private set
     lateinit var storageManager: StorageManager private set
@@ -37,6 +41,15 @@ class ServerManager : JavaPlugin() {
         // Dependencies
         hasVault = setupEconomy()
         hasPapi = checkPlaceholderAPI()
+
+        // Initial API System
+        apiInstance = ServerManagerAPIImplement(this)
+        server.servicesManager.register(
+            ServerManagerAPI::class.java,
+            apiInstance,
+            this,
+            ServicePriority.High
+        )
 
         // Initial ConfigManager
         configManager = ConfigManager(this)
