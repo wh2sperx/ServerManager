@@ -1,7 +1,7 @@
 package dev.wh2sperx.security
 
 import dev.wh2sperx.ServerManager
-import dev.wh2sperx.storage.model.PlayerData
+import dev.wh2sperx.api.model.PlayerData
 import org.bukkit.Bukkit
 import org.mindrot.jbcrypt.BCrypt
 import java.security.SecureRandom

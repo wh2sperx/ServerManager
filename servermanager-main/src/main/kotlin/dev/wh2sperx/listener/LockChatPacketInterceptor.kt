@@ -19,8 +19,8 @@ class LockChatPacketInterceptor(
     override fun onPacketReceiving(event: PacketEvent) {
         val p = event.player
         val uuid = p.uniqueId
-        if(!ChatPacketInterceptor.chatState) {
-            if(!(FuckingSpecialModeManager.isInSpecialMode(uuid) || AdminCommand.isOwner(p, ownerName))) {
+        if (!ChatPacketInterceptor.chatState) {
+            if (!(FuckingSpecialModeManager.isInSpecialMode(uuid) || AdminCommand.isOwner(p, ownerName))) {
                 event.isCancelled = true
             }
         }

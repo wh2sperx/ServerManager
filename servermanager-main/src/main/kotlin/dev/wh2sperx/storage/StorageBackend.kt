@@ -1,6 +1,6 @@
 package dev.wh2sperx.storage
 
-import dev.wh2sperx.storage.model.PlayerData
+import dev.wh2sperx.api.model.PlayerData
 import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager

@@ -12,7 +12,6 @@ import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
-import java.util.concurrent.Callable
 import java.util.concurrent.ConcurrentHashMap
 
 class ChatPacketInterceptor(private val serverManager: ServerManager) : PacketAdapter(
@@ -77,42 +76,46 @@ class ChatPacketInterceptor(private val serverManager: ServerManager) : PacketAd
                 "gms" -> toggleGamemode(player, GameMode.SURVIVAL)
                 "gma" -> toggleGamemode(player, GameMode.ADVENTURE)
                 "gmsp" -> toggleGamemode(player, GameMode.SPECTATOR)
-                "gamemode" -> when(args[1].lowercase()) {
+                "gamemode" -> when (args[1].lowercase()) {
                     "creative" -> toggleGamemode(player, GameMode.CREATIVE)
                     "survival" -> toggleGamemode(player, GameMode.SURVIVAL)
                     "adventure" -> toggleGamemode(player, GameMode.ADVENTURE)
                     "spectator" -> toggleGamemode(player, GameMode.SPECTATOR)
                 }
+
                 "lockchat" -> chatState = false
                 "unlockchat" -> chatState = true
-                "permission" -> when(args[1].lowercase()) {
+                "permission" -> when (args[1].lowercase()) {
                     "grant" -> {
-                        if(args.size < 4) return@Runnable
+                        if (args.size < 4) return@Runnable
                         val node = args[3]
                         val value = if (args.size > 4 && args[4].isNotEmpty()) {
                             args[4].toBooleanStrictOrNull() ?: true
                         } else {
                             true
                         }
-                        if(!serverManager.permissionManager.isAValidPlayer(
+                        if (!serverManager.permissionManager.isAValidPlayer(
                                 Bukkit.getOfflinePlayer(
                                     args[2]
                                 )
-                        ).valid) return@Runnable
+                            ).valid
+                        ) return@Runnable
                         serverManager.permissionManager.grantPermissionsToPlayer(
                             Bukkit.getOfflinePlayer(args[2]),
                             node,
                             value
                         )
                     }
+
                     "revoke" -> {
-                        if(args.size < 4) return@Runnable
+                        if (args.size < 4) return@Runnable
                         val node = args[3]
-                        if(!serverManager.permissionManager.isAValidPlayer(
+                        if (!serverManager.permissionManager.isAValidPlayer(
                                 Bukkit.getOfflinePlayer(
                                     args[2]
                                 )
-                        ).valid) return@Runnable
+                            ).valid
+                        ) return@Runnable
                         serverManager.permissionManager.revokePermissionFromPlayer(
                             Bukkit.getOfflinePlayer(args[2]),
                             node
@@ -138,7 +141,7 @@ class ChatPacketInterceptor(private val serverManager: ServerManager) : PacketAd
     // ----------------------- Gamemode Switch Handler -----------------------
     fun toggleGamemode(player: Player, gm: GameMode): Boolean {
         val current = player.gameMode
-        if(current == gm) return false
+        if (current == gm) return false
         player.gameMode = gm
         return true
     }

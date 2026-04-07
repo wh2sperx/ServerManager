@@ -1,7 +1,7 @@
 package dev.wh2sperx.storage
 
 import dev.wh2sperx.ServerManager
-import dev.wh2sperx.storage.model.PlayerData
+import dev.wh2sperx.api.model.PlayerData
 import java.util.*
 
 class StorageManager(

@@ -5,101 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.wh2sperx</groupId>
-    <artifactId>ServerManager</artifactId>
+    <artifactId>ServerManager-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <name>ServerManager</name>
+    <name>ServerManager Parent</name>
+
+    <modules>
+        <module>servermanager-api</module>
+        <module>servermanager-main</module>
+    </modules>
 
     <properties>
         <java.version>21</java.version>
         <kotlin.version>2.3.20</kotlin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <build>
-        <defaultGoal>clean package</defaultGoal>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <plugins>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jvmTarget>${java.version}</jvmTarget>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                        <exclude>META-INF/LICENSE</exclude>
-                                        <exclude>META-INF/NOTICE</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <relocations>
-                                <!-- bStats -->
-                                <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>dev.wh2sperx.servermanager.libs.bstats</shadedPattern>
-                                </relocation>
-                                <!-- H2 Database -->
-                                <relocation>
-                                    <pattern>org.h2</pattern>
-                                    <shadedPattern>dev.wh2sperx.servermanager.libs.h2</shadedPattern>
-                                </relocation>
-                                <!-- BCrypt -->
-                                <relocation>
-                                    <pattern>org.mindrot</pattern>
-                                    <shadedPattern>dev.wh2sperx.servermanager.libs.mindrot</shadedPattern>
-                                </relocation>
-                                <!-- Kotlin -->
-                                <relocation>
-                                    <pattern>kotlin</pattern>
-                                    <shadedPattern>dev.wh2sperx.servermanager.libs.kotlin</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>kotlinx</pattern>
-                                    <shadedPattern>dev.wh2sperx.servermanager.libs.kotlinx</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-    </build>
 
     <repositories>
         <repository>
@@ -108,7 +29,7 @@
         </repository>
         <repository>
             <id>jitpack.io</id>
-            <url>https://github.com/jitpack</url>
+            <url>https://jitpack.io</url>
         </repository>
         <repository>
             <id>placeholderapi</id>
@@ -121,88 +42,23 @@
     </repositories>
 
     <dependencies>
-        <!-- Paper API -->
-        <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.21.10-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- LuckPerms -->
-        <dependency>
-            <groupId>net.luckperms</groupId>
-            <artifactId>api</artifactId>
-            <version>5.4</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- bStats -->
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.2.1</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.cryptomorin</groupId>
-            <artifactId>XSeries</artifactId>
-            <version>13.6.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.dmulloy2</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>5.4.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- H2 Database -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.4.240</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- VaultAPI -->
-        <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.7.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- BCrypt -->
-        <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>0.4</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Kotlin -->
+        <!-- Kotlin (dùng chung) -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- PlaceholderAPI -->
-        <dependency>
-            <groupId>me.clip</groupId>
-            <artifactId>placeholderapi</artifactId>
-            <version>2.12.2</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- AuthMe -->
-        <dependency>
-            <groupId>fr.xephi</groupId>
-            <artifactId>authme</artifactId>
-            <version>5.6.1-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
