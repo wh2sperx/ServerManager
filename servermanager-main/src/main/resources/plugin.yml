@@ -7,6 +7,11 @@ authors: [ wh2sperx ]
 website: https://qhuyy.tech
 depend: [ AuthMe, ProtocolLib ]
 softdepend: [ PlaceholderAPI, Vault ]
+libraries:
+  - org.mindrot:jbcrypt:0.4
+  - com.h2database:h2:2.4.240
+  - com.github.cryptomorin:XSeries:13.6.0
+  - org.bstats:bstats-bukkit:3.2.1
 
 commands:
   admin:

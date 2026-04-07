@@ -1,4 +1,6 @@
 name: Build Maven Project
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: TRUE
 
 on:
   push:
