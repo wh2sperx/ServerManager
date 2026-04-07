@@ -1,0 +1,55 @@
+name: Build Maven Project
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn clean compile test
+
+      - name: Package with Maven
+        run: mvn package -DskipTests
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            **/target/*.jar
+            !**/target/original-*.jar  # Loại trừ original files nếu có shade plugin
+          if-no-files-found: warn
+          compression-level: 6
+          retention-days: 14
+
+      - name: Upload specific module artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: servermanager-module
+          path: servermanager-main/target/*.jar
+          if-no-files-found: error

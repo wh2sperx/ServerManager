@@ -96,6 +96,7 @@
     </dependencies>
 
     <build>
+        <finalName>ServerManager-${project.version}</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
