@@ -38,7 +38,6 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>3.2.1</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -150,6 +149,10 @@
                                 <relocation>
                                     <pattern>kotlin</pattern>
                                     <shadedPattern>dev.wh2sperx.servermanager.libs.kotlin</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>dev.wh2sperx.servermanager.libs.bstats</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>kotlinx</pattern>
